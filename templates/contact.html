@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('contact_us') }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 p-5">
+            <h1 class="display-4 fw-bold text-center mb-5" style="color: var(--primary);">{{ _('contact_us') }}</h1>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h5 class="fw-semibold" style="color: var(--primary);"><i class="bi bi-geo-alt-fill me-2"></i> Alamat</h5>
+                        <p class="text-muted">Jl. Siliwangi, Kahuripan, Kec. Tawang, Kab. Tasikmalaya, Jawa Barat</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="fw-semibold" style="color: var(--primary);"><i class="bi bi-envelope-fill me-2"></i> Email</h5>
+                        <p class="text-muted">info@handphone.com</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="fw-semibold" style="color: var(--primary);"><i class="bi bi-telephone-fill me-2"></i> Telepon</h5>
+                        <p class="text-muted">+60 12-3795 201</p>
+                    </div>
+                    <div class="mb-4">
+                        <h5 class="fw-semibold" style="color: var(--primary);"><i class="bi bi-clock-fill me-2"></i> Jam Operasional</h5>
+                        <p class="text-muted">Senin - Jumat: 10:00 - 20:00<br>Sabtu - Minggu: 12:00 - 18:00</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="rounded-4 overflow-hidden shadow" style="height: 300px;">
+                        <iframe 
+                            src="https://www.google.com/maps?q=Jalan%20Ampang%20Kuala%20Lumpur&output=embed" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

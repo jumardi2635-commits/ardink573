@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('catalog') }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="row g-5">
+    <!-- Tombol Filter untuk Mobile -->
+    <div class="col-12 d-lg-none mb-3">
+        <button class="btn btn-outline-primary w-100 rounded-pill py-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas" aria-controls="filterOffcanvas">
+            <i class="bi bi-sliders2 me-2"></i> {{ _('filter') }}
+        </button>
+    </div>
+
+    <!-- Sidebar Filter untuk Desktop -->
+    <aside class="col-lg-3 d-none d-lg-block">
+        <div class="filter-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0 fw-semibold">{{ _('filter') }}</h5>
+                <button id="clear-filters-desktop" class="btn btn-link p-0 text-decoration-none small" style="color: var(--primary);">{{ _('clear_all') }}</button>
+            </div>
+            {% include "includes/filter_content.html" %}
+        </div>
+    </aside>
+
+    <!-- Offcanvas Filter untuk Mobile -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-semibold" id="filterOffcanvasLabel">{{ _('filter') }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <button id="clear-filters-mobile" class="btn btn-link p-0 text-decoration-none small mb-3" style="color: var(--primary);">{{ _('clear_all') }}</button>
+            {% include "includes/filter_content.html" %}
+        </div>
+    </div>
+
+    <!-- Product Area -->
+    <div class="col-lg-9">
+        <!-- Toolbar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 fw-semibold">{{ _('catalog') }}</h1>
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm rounded-pill px-4" style="border-color: #ddd; width: auto;">
+                    <option>{{ _('sort_by') }}: {{ _('newest') }}</option>
+                    <option>{{ _('price_low_high') }}</option>
+                    <option>{{ _('price_high_low') }}</option>
+                </select>
+                <div class="btn-group" role="group">
+                    <button id="grid-view" class="btn btn-outline-secondary active rounded-pill px-4">
+                        <i class="bi bi-grid-3x3-gap-fill me-1"></i> {{ _('grid') }}
+                    </button>
+                    <button id="list-view" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-list-ul me-1"></i> {{ _('list') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Container -->
+        <div id="product-container" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for product in products %}
+            <!-- Grid Item -->
+            <div class="col product-item grid-view">
+                <div class="card h-100">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename) if product.image_filename else 'https://placehold.co/400x300/f8f5f2/8B6B4D?text=No+Image' }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold fs-5">{{ product.name }}</h5>
+                        <p class="card-text text-muted small">{{ product.brand }} {{ product.model }}</p>
+                        <div class="price">{{ format_price(product.price) }}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge-condition">{{ product.condition }}</span>
+                            <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-4">{{ _('detail') }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- List Item (hidden) -->
+            <div class="col-12 product-item list-view d-none">
+                <div class="card flex-row align-items-center p-4">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename) if product.image_filename else 'https://placehold.co/100x100/f8f5f2/8B6B4D?text=No+Image' }}" alt="{{ product.name }}" class="rounded-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    <div class="ms-4 flex-grow-1">
+                        <h5 class="fw-semibold mb-1">{{ product.name }}</h5>
+                        <p class="text-muted small mb-2">{{ product.brand }} {{ product.model }}</p>
+                        <div class="price mb-2">{{ format_price(product.price) }}</div>
+                        <span class="badge-condition me-2">{{ product.condition }}</span>
+                        <small class="text-muted">{{ _('stock') }}: {{ product.stock }}</small>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary rounded-pill px-4 py-2">{{ _('detail') }}</a>
+                        <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                            <button type="submit" class="btn btn-outline-primary rounded-pill px-4 py-2">➕ {{ _('add_to_cart') }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not products %}
+        <p class="text-center text-muted py-5 fs-5">{{ _('no_products') }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Grid/List toggle
+        const gridBtn = document.getElementById('grid-view');
+        const listBtn = document.getElementById('list-view');
+        const container = document.getElementById('product-container');
+        const gridItems = document.querySelectorAll('.product-item.grid-view');
+        const listItems = document.querySelectorAll('.product-item.list-view');
+
+        if (gridBtn && listBtn) {
+            gridBtn.addEventListener('click', () => {
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                container.classList.remove('row-cols-1');
+                container.classList.add('row-cols-1', 'row-cols-sm-2', 'row-cols-lg-3');
+                gridItems.forEach(item => item.classList.remove('d-none'));
+                listItems.forEach(item => item.classList.add('d-none'));
+            });
+
+            listBtn.addEventListener('click', () => {
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                container.classList.remove('row-cols-sm-2', 'row-cols-lg-3');
+                container.classList.add('row-cols-1');
+                gridItems.forEach(item => item.classList.add('d-none'));
+                listItems.forEach(item => item.classList.remove('d-none'));
+            });
+        }
+
+        // Clear filters
+        function clearFilters() {
+            window.location.href = "{{ url_for('catalog') }}";
+        }
+        document.getElementById('clear-filters-desktop')?.addEventListener('click', clearFilters);
+        document.getElementById('clear-filters-mobile')?.addEventListener('click', clearFilters);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Keranjang - {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1 class="display-4 fw-bold mb-5" style="color: var(--primary);">Keranjang Belanja</h1>
+
+{% if cart_items %}
+<div class="card border-0 shadow-lg rounded-4 p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="fw-semibold py-3">Produk</th>
+                    <th scope="col" class="fw-semibold py-3">Harga</th>
+                    <th scope="col" class="fw-semibold py-3">Jumlah</th>
+                    <th scope="col" class="fw-semibold py-3">Subtotal</th>
+                    <th scope="col" class="fw-semibold py-3">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td class="py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            {% if item.image %}
+                            <img src="{{ url_for('uploaded_product_file', filename=item.image) }}" alt="{{ item.name }}" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            {% endif %}
+                            <div>
+                                <div class="fw-semibold fs-6">{{ item.name }}</div>
+                                <small class="text-muted">{{ item.brand }} {{ item.model }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3">
+                        <span class="fw-semibold" style="color: var(--primary);">{{ format_price(item.price) }}</span>
+                    </td>
+                    <td class="py-3" style="min-width: 150px;">
+                        <form action="{{ url_for('update_cart', product_id=item.product_id) }}" method="POST" class="d-flex align-items-center gap-2">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control form-control-sm rounded-pill" style="width: 80px;">
+                            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Update</button>
+                        </form>
+                    </td>
+                    <td class="py-3">
+                        <span class="fw-bold fs-5" style="color: var(--primary);">{{ format_price(item.price * item.quantity) }}</span>
+                    </td>
+                    <td class="py-3">
+                        <a href="{{ url_for('remove_from_cart', product_id=item.product_id) }}" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Hapus item ini?')">
+                            <i class="bi bi-trash"></i> Hapus
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="border-top border-2">
+                    <td colspan="3" class="pt-4 text-end fw-bold fs-5">Total:</td>
+                    <td class="pt-4 fw-bold fs-4" style="color: var(--primary);">{{ format_price(total) }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="d-flex justify-content-end mt-4">
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3">Checkout</a>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-lg rounded-4 p-5 text-center">
+    <p class="fs-4 text-muted mb-4">Keranjang belanja Anda kosong.</p>
+    <a href="{{ url_for('catalog') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 mx-auto">Mulai Belanja</a>
+</div>
+{% endif %}
+{% endblock %}

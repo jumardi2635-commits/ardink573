@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="row g-5">
+    <!-- Image Gallery -->
+    <div class="col-md-6">
+        {% set images = product.get_images() %}
+        {% if images %}
+        <div class="swiper productSwiper border-0 rounded-4 overflow-hidden shadow-lg">
+            <div class="swiper-wrapper">
+                {% for img in images %}
+                <div class="swiper-slide">
+                    <img src="{{ url_for('uploaded_product_file', filename=img) }}" alt="{{ product.name }}" class="w-100" style="height: 450px; object-fit: cover;">
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+        {% else %}
+        <div class="bg-light rounded-4 p-5 text-center">
+            <img src="https://placehold.co/600x400/f8f5f2/8B6B4D?text=No+Image" alt="No image" class="img-fluid rounded-3">
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Details -->
+    <div class="col-md-6">
+        <h1 class="display-4 fw-bold mb-2" style="color: var(--primary);">{{ product.name }}</h1>
+        <p class="text-muted fs-5 mb-4">{{ product.brand }} {{ product.model }}</p>
+        
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <span class="display-5 fw-bold price">{{ format_price(product.price) }}</span>
+            <span class="badge-condition fs-6">{{ product.condition }}</span>
+        </div>
+
+        {% if product.stock > 0 %}
+        <p class="text-success fs-5"><i class="bi bi-check-circle-fill me-2"></i> Stok tersedia: {{ product.stock }}</p>
+        {% else %}
+        <p class="text-danger fs-5"><i class="bi bi-x-circle-fill me-2"></i> Stok habis</p>
+        {% endif %}
+
+        <hr class="my-4">
+
+        <h5 class="fw-semibold mb-3">Deskripsi Produk</h5>
+        <p class="text-muted fs-6 lh-lg">{{ product.description or 'Tidak ada deskripsi.' }}</p>
+
+        <hr class="my-4">
+
+        <div class="d-flex flex-column flex-sm-row gap-3">
+            <a href="https://wa.me/60123795201?text=Saya%20tertarik%20dengan%20{{ product.name }}" target="_blank" class="btn btn-primary btn-lg rounded-pill py-3 fs-5 flex-fill">
+                <i class="bi bi-whatsapp me-2"></i> Beli via WhatsApp
+            </a>
+            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="flex-fill">
+                <button type="submit" class="btn btn-outline-primary btn-lg rounded-pill w-100 py-3 fs-5">
+                    <i class="bi bi-cart-plus me-2"></i> Tambah ke Keranjang
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related %}
+<section class="mt-5 pt-5">
+    <h3 class="fw-semibold mb-4" style="color: var(--primary);">Produk Terkait</h3>
+    <div class="row row-cols-2 row-cols-md-4 g-4">
+        {% for rel in related %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ url_for('uploaded_product_file', filename=rel.image_filename) if rel.image_filename else 'https://placehold.co/200x150/f8f5f2/8B6B4D?text=No+Image' }}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ rel.name }}">
+                <div class="card-body">
+                    <h6 class="card-title fw-semibold">{{ rel.name }}</h6>
+                    <p class="price small mb-2">{{ format_price(rel.price) }}</p>
+                    <a href="{{ url_for('product_detail', id=rel.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-4">Detail</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Swiper !== 'undefined') {
+            new Swiper(".productSwiper", {
+                spaceBetween: 10,
+                loop: true,
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }
+            });
+        }
+    });
+</script>
+{% endblock %}

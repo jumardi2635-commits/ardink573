@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} - Beranda Premium{% endblock %}
+
+{% block content %}
+<!-- Hero Slider -->
+{% if hero_slides %}
+<section class="mb-5">
+    <div class="swiper heroSwiper rounded-5 overflow-hidden shadow-lg">
+        <div class="swiper-wrapper">
+            {% for slide in hero_slides %}
+            <div class="swiper-slide position-relative" style="height: 600px;">
+                <img src="{{ url_for('uploaded_hero_file', filename=slide.image_filename) }}" alt="{{ slide.title }}" class="w-100 h-100 object-fit-cover">
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);">
+                    <div class="container">
+                        <div class="col-lg-6 text-white">
+                            {% if slide.title %}
+                            <h2 class="display-3 fw-bold mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{{ slide.title }}</h2>
+                            {% endif %}
+                            {% if slide.subtitle %}
+                            <p class="lead mb-4" style="font-size: 1.25rem;">{{ slide.subtitle }}</p>
+                            {% endif %}
+                            {% if slide.button_text and slide.button_url %}
+                            <a href="{{ slide.button_url }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3">{{ slide.button_text }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+{% else %}
+<!-- Fallback Hero -->
+<section class="position-relative mb-5" style="height: 600px;">
+    <div class="position-absolute top-0 start-0 w-100 h-100">
+        <img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Hero" class="w-100 h-100 object-fit-cover">
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);"></div>
+    </div>
+    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+        <div class="container">
+            <div class="col-lg-6 text-white">
+                <h1 class="display-3 fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                    <span style="color: var(--primary);">Handphone</span> <span>Second</span>
+                </h1>
+                <p class="lead mb-4" style="font-size: 1.25rem;">Koleksi berkualitas dengan harga terbaik. Setiap unit telah melalui pemeriksaan ketat oleh ahli.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('catalog') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3">Lihat Katalog</a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-primary btn-lg rounded-pill px-5 py-3">Hubungi Kami</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Products Slider -->
+{% if featured %}
+<section class="mb-5">
+    <h2 class="section-title"><span>Produk Unggulan</span></h2>
+    <div class="swiper featuredSwiper">
+        <div class="swiper-wrapper">
+            {% for product in featured %}
+            <div class="swiper-slide">
+                <div class="card h-100">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename) if product.image_filename else 'https://placehold.co/400x300/f8f5f2/8B6B4D?text=No+Image' }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold fs-5">{{ product.name }}</h5>
+                        <p class="card-text text-muted small">{{ product.brand }} {{ product.model }}</p>
+                        <div class="price">{{ format_price(product.price) }}</div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge-condition">{{ product.condition }}</span>
+                            <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-4">Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+{% endif %}
+
+<!-- All Products with Filters -->
+<section class="mb-5">
+    <h2 class="section-title"><span>Semua Produk</span></h2>
+    
+    <div class="row g-5">
+        <!-- Tombol Filter untuk Mobile -->
+        <div class="col-12 d-lg-none mb-3">
+            <button class="btn btn-outline-primary w-100 rounded-pill py-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas" aria-controls="filterOffcanvas">
+                <i class="bi bi-sliders2 me-2"></i> Filter
+            </button>
+        </div>
+
+        <!-- Sidebar Filter untuk Desktop -->
+        <aside class="col-lg-3 d-none d-lg-block">
+            <div class="filter-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0 fw-semibold">Filter</h5>
+                    <a href="{{ url_for('index') }}" class="text-decoration-none small" style="color: var(--primary);">Reset</a>
+                </div>
+
+                <!-- Filter: Brand (Radio) -->
+                <div class="mb-4">
+                    <h6 class="d-flex justify-content-between align-items-center fw-semibold mb-3 cursor-pointer" onclick="toggleFilter('brand-filter-desktop')">
+                        Merek
+                        <span class="fs-6">▼</span>
+                    </h6>
+                    <div id="brand-filter-desktop" class="filter-section mt-2">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="brand_desktop" id="brandAllDesktop" value="all" {% if not request.args.brand or request.args.brand == 'all' %}checked{% endif %} onchange="applyFilter('brand', 'all')" style="border-color: var(--primary);">
+                            <label class="form-check-label" for="brandAllDesktop">Semua</label>
+                        </div>
+                        {% for brand in brands %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="brand_desktop" id="brandDesktop{{ loop.index }}" value="{{ brand }}" {% if request.args.brand == brand %}checked{% endif %} onchange="applyFilter('brand', '{{ brand }}')" style="border-color: var(--primary);">
+                            <label class="form-check-label" for="brandDesktop{{ loop.index }}">{{ brand }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Filter: Condition (Checkbox) -->
+                <div class="mb-4">
+                    <h6 class="d-flex justify-content-between align-items-center fw-semibold mb-3 cursor-pointer" onclick="toggleFilter('condition-filter-desktop')">
+                        Kondisi
+                        <span class="fs-6">▼</span>
+                    </h6>
+                    <div id="condition-filter-desktop" class="filter-section mt-2">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input condition-checkbox" type="checkbox" value="Used" id="conditionUsedDesktop" {% if 'Used' in selected_conditions %}checked{% endif %} style="border-color: var(--primary);">
+                            <label class="form-check-label" for="conditionUsedDesktop">Used</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input condition-checkbox" type="checkbox" value="Like New" id="conditionLikeNewDesktop" {% if 'Like New' in selected_conditions %}checked{% endif %} style="border-color: var(--primary);">
+                            <label class="form-check-label" for="conditionLikeNewDesktop">Like New</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input condition-checkbox" type="checkbox" value="Excellent" id="conditionExcellentDesktop" {% if 'Excellent' in selected_conditions %}checked{% endif %} style="border-color: var(--primary);">
+                            <label class="form-check-label" for="conditionExcellentDesktop">Excellent</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Offcanvas Filter untuk Mobile -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title fw-semibold" id="filterOffcanvasLabel">Filter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <a href="{{ url_for('index') }}" class="btn btn-link p-0 text-decoration-none small mb-3" style="color: var(--primary);">Reset</a>
+                
+                <!-- Filter: Brand (Radio) -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Merek</h6>
+                    <div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="brand_mobile" id="brandAllMobile" value="all" {% if not request.args.brand or request.args.brand == 'all' %}checked{% endif %} onchange="applyFilter('brand', 'all')" style="border-color: var(--primary);">
+                            <label class="form-check-label" for="brandAllMobile">Semua</label>
+                        </div>
+                        {% for brand in brands %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="brand_mobile" id="brandMobile{{ loop.index }}" value="{{ brand }}" {% if request.args.brand == brand %}checked{% endif %} onchange="applyFilter('brand', '{{ brand }}')" style="border-color: var(--primary);">
+                            <label class="form-check-label" for="brandMobile{{ loop.index }}">{{ brand }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Filter: Condition (Checkbox) -->
+                <div class="mb-4">
+                    <h6 class="fw-semibold mb-3">Kondisi</h6>
+                    <div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input condition-checkbox-mobile" type="checkbox" value="Used" id="conditionUsedMobile" {% if 'Used' in selected_conditions %}checked{% endif %} style="border-color: var(--primary);">
+                            <label class="form-check-label" for="conditionUsedMobile">Used</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input condition-checkbox-mobile" type="checkbox" value="Like New" id="conditionLikeNewMobile" {% if 'Like New' in selected_conditions %}checked{% endif %} style="border-color: var(--primary);">
+                            <label class="form-check-label" for="conditionLikeNewMobile">Like New</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input condition-checkbox-mobile" type="checkbox" value="Excellent" id="conditionExcellentMobile" {% if 'Excellent' in selected_conditions %}checked{% endif %} style="border-color: var(--primary);">
+                            <label class="form-check-label" for="conditionExcellentMobile">Excellent</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="apply-filter-mobile" class="btn btn-primary w-100 rounded-pill mt-3">Terapkan Filter</button>
+            </div>
+        </div>
+
+        <!-- Product Area -->
+        <div class="col-lg-9">
+            <!-- Toolbar -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                <h4 class="mb-0 fw-semibold">Semua Produk <span class="text-muted fs-6 fw-normal">({{ products|length }})</span></h4>
+                <div class="btn-group" role="group">
+                    <button id="grid-view" class="btn btn-outline-secondary active rounded-pill px-4">
+                        <i class="bi bi-grid-3x3-gap-fill me-1"></i> Grid
+                    </button>
+                    <button id="list-view" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-list-ul me-1"></i> List
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product Container -->
+            <div id="product-container" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                {% for product in products %}
+                <!-- Grid View Item -->
+                <div class="col product-item grid-view">
+                    <div class="card h-100">
+                        <img src="{{ url_for('uploaded_product_file', filename=product.image_filename) if product.image_filename else 'https://placehold.co/400x300/f8f5f2/8B6B4D?text=No+Image' }}" class="card-img-top product-image" alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title fw-semibold fs-5">{{ product.name }}</h5>
+                            <p class="card-text text-muted small">{{ product.brand }} {{ product.model }}</p>
+                            <div class="price">{{ format_price(product.price) }}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="badge-condition">{{ product.condition }}</span>
+                                <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-outline-primary btn-sm rounded-pill px-4">Detail</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List View Item (hidden by default) -->
+                <div class="col-12 product-item list-view d-none">
+                    <div class="card flex-row align-items-center p-4">
+                        <img src="{{ url_for('uploaded_product_file', filename=product.image_filename) if product.image_filename else 'https://placehold.co/100x100/f8f5f2/8B6B4D?text=No+Image' }}" alt="{{ product.name }}" class="rounded-3" style="width: 120px; height: 120px; object-fit: cover;">
+                        <div class="ms-4 flex-grow-1">
+                            <h5 class="fw-semibold mb-1">{{ product.name }}</h5>
+                            <p class="text-muted small mb-2">{{ product.brand }} {{ product.model }}</p>
+                            <div class="price mb-2">{{ format_price(product.price) }}</div>
+                            <span class="badge-condition me-2">{{ product.condition }}</span>
+                            <small class="text-muted">Stok: {{ product.stock }}</small>
+                        </div>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary rounded-pill px-4 py-2">Detail</a>
+                            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                <button type="submit" class="btn btn-outline-primary rounded-pill px-4 py-2">➕ Keranjang</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if not products %}
+            <p class="text-center text-muted py-5 fs-5">Belum ada produk.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+{% if testimonials %}
+<section class="mb-5">
+    <h2 class="section-title"><span>Apa Kata Pelanggan</span></h2>
+    <div class="row g-4">
+        {% for testimonial in testimonials %}
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-5">
+                <div class="d-flex justify-content-center mb-4">
+                    {% if testimonial.image_filename %}
+                    <img src="{{ url_for('uploaded_testimonial_file', filename=testimonial.image_filename) }}" alt="{{ testimonial.name }}" class="rounded-circle" width="100" height="100" style="object-fit: cover; border: 4px solid var(--primary);">
+                    {% else %}
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background-color: var(--primary) !important;">
+                        <span class="fs-2 fw-bold">{{ testimonial.name[0] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="text-warning fs-5 mb-3">
+                    {% for i in range(testimonial.rating) %}★{% endfor %}
+                </div>
+                <p class="card-text fst-italic fs-6">"{{ testimonial.text }}"</p>
+                <p class="fw-bold mb-0 fs-5" style="color: var(--primary);">— {{ testimonial.name }}</p>
+                {% if testimonial.location %}
+                <small class="text-muted">{{ testimonial.location }}</small>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ========== SWIPER INIT ==========
+        if (typeof Swiper !== 'undefined') {
+            new Swiper('.heroSwiper', {
+                loop: true,
+                autoplay: { delay: 5000 },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+            });
+
+            new Swiper('.featuredSwiper', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: { delay: 3000 },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                breakpoints: {
+                    640: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 }
+                }
+            });
+        }
+
+        // ========== FILTER TOGGLE (untuk sidebar desktop) ==========
+        window.toggleFilter = function(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('d-none');
+        };
+
+        // ========== APPLY FILTER RADIO (Brand) ==========
+        window.applyFilter = function(filterName, filterValue) {
+            const url = new URL(window.location.href);
+            if (filterValue === 'all') {
+                url.searchParams.delete(filterName);
+            } else {
+                url.searchParams.set(filterName, filterValue);
+            }
+            // Untuk kondisi checkbox, kita akan tangani secara terpisah
+            // Tapi untuk sederhananya, kita redirect dengan parameter brand
+            window.location.href = url.toString();
+        };
+
+        // ========== HANDLE CONDITION CHECKBOX (Desktop) ==========
+        const conditionCheckboxes = document.querySelectorAll('.condition-checkbox');
+        conditionCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                applyConditionFilter();
+            });
+        });
+
+        function applyConditionFilter() {
+            const selected = [];
+            document.querySelectorAll('.condition-checkbox:checked').forEach(cb => {
+                selected.push(cb.value);
+            });
+            const url = new URL(window.location.href);
+            if (selected.length > 0) {
+                url.searchParams.set('condition', selected.join(','));
+            } else {
+                url.searchParams.delete('condition');
+            }
+            window.location.href = url.toString();
+        }
+
+        // ========== HANDLE CONDITION CHECKBOX (Mobile) ==========
+        const mobileConditionCheckboxes = document.querySelectorAll('.condition-checkbox-mobile');
+        const applyMobileFilterBtn = document.getElementById('apply-filter-mobile');
+        if (applyMobileFilterBtn) {
+            applyMobileFilterBtn.addEventListener('click', function() {
+                // Ambil brand yang dipilih
+                const selectedBrand = document.querySelector('input[name="brand_mobile"]:checked');
+                let brandValue = 'all';
+                if (selectedBrand && selectedBrand.value !== 'all') {
+                    brandValue = selectedBrand.value;
+                }
+
+                // Ambil kondisi yang dipilih
+                const selectedConditions = [];
+                document.querySelectorAll('.condition-checkbox-mobile:checked').forEach(cb => {
+                    selectedConditions.push(cb.value);
+                });
+
+                const url = new URL(window.location.href);
+                if (brandValue === 'all') {
+                    url.searchParams.delete('brand');
+                } else {
+                    url.searchParams.set('brand', brandValue);
+                }
+
+                if (selectedConditions.length > 0) {
+                    url.searchParams.set('condition', selectedConditions.join(','));
+                } else {
+                    url.searchParams.delete('condition');
+                }
+
+                window.location.href = url.toString();
+            });
+        }
+
+        // ========== GRID/LIST VIEW TOGGLE ==========
+        const gridBtn = document.getElementById('grid-view');
+        const listBtn = document.getElementById('list-view');
+        const container = document.getElementById('product-container');
+        const gridItems = document.querySelectorAll('.product-item.grid-view');
+        const listItems = document.querySelectorAll('.product-item.list-view');
+
+        if (gridBtn && listBtn) {
+            gridBtn.addEventListener('click', () => {
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                container.classList.remove('row-cols-1');
+                container.classList.add('row-cols-1', 'row-cols-sm-2', 'row-cols-lg-3');
+                gridItems.forEach(item => item.classList.remove('d-none'));
+                listItems.forEach(item => item.classList.add('d-none'));
+            });
+
+            listBtn.addEventListener('click', () => {
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                container.classList.remove('row-cols-sm-2', 'row-cols-lg-3');
+                container.classList.add('row-cols-1');
+                gridItems.forEach(item => item.classList.add('d-none'));
+                listItems.forEach(item => item.classList.remove('d-none'));
+            });
+        }
+
+        // ========== INISIALISASI TAMPILAN FILTER ==========
+        // Sembunyikan filter-section yang tidak aktif? (opsional)
+        // Bisa juga membuka section jika ada parameter
+    });
+</script>
+{% endblock %}

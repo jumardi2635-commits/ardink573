@@ -1,0 +1,114 @@
+{% extends "admin/base_admin.html" %}
+
+{% block page_title %}{{ 'Edit' if product else 'Add' }} Product{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-3">
+        <i class="fas fa-box text-2xl" style="color: var(--primary);"></i>
+        {{ 'Edit' if product else 'Add' }} Product
+    </h1>
+</div>
+
+<div class="admin-card p-4 sm:p-6">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Product Name *</label>
+                <input type="text" name="name" value="{{ product.name if product else '' }}" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Brand *</label>
+                <input type="text" name="brand" value="{{ product.brand if product else '' }}" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition"
+                       placeholder="Apple, Samsung...">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Model</label>
+                <input type="text" name="model" value="{{ product.model if product else '' }}"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Price (Rp) *</label>
+                <input type="number" step="0.01" name="price" value="{{ product.price_display if product else '' }}" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition">
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Condition</label>
+                <select name="condition"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition">
+                    <option value="Used" {% if product and product.condition == 'Used' %}selected{% endif %}>Used</option>
+                    <option value="Like New" {% if product and product.condition == 'Like New' %}selected{% endif %}>Like New</option>
+                    <option value="Excellent" {% if product and product.condition == 'Excellent' %}selected{% endif %}>Excellent</option>
+                </select>
+            </div>
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-700">Stock</label>
+                <input type="number" name="stock" value="{{ product.stock if product else 1 }}"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Main Image</label>
+                {% if product and product.image_filename %}
+                <div class="mb-2">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename) }}" alt="Current"
+                         class="h-20 w-20 object-cover rounded-lg border border-gray-200">
+                </div>
+                {% endif %}
+                <input type="file" name="image" accept="image/*"
+                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:bg-[var(--primary-dark)] transition">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Additional Image 2</label>
+                {% if product and product.image_filename2 %}
+                <div class="mb-2">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename2) }}" alt="Current"
+                         class="h-20 w-20 object-cover rounded-lg border border-gray-200">
+                </div>
+                {% endif %}
+                <input type="file" name="image2" accept="image/*"
+                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:bg-[var(--primary-dark)] transition">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Additional Image 3</label>
+                {% if product and product.image_filename3 %}
+                <div class="mb-2">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename3) }}" alt="Current"
+                         class="h-20 w-20 object-cover rounded-lg border border-gray-200">
+                </div>
+                {% endif %}
+                <input type="file" name="image3" accept="image/*"
+                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:bg-[var(--primary-dark)] transition">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Additional Image 4</label>
+                {% if product and product.image_filename4 %}
+                <div class="mb-2">
+                    <img src="{{ url_for('uploaded_product_file', filename=product.image_filename4) }}" alt="Current"
+                         class="h-20 w-20 object-cover rounded-lg border border-gray-200">
+                </div>
+                {% endif %}
+                <input type="file" name="image4" accept="image/*"
+                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)] file:text-white hover:file:bg-[var(--primary-dark)] transition">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block mb-2 text-sm font-medium text-gray-700">Description</label>
+                <textarea name="description" rows="5"
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition">{{ product.description if product else '' }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="flex items-center text-gray-700">
+                    <input type="checkbox" name="is_featured" {% if product and product.is_featured %}checked{% endif %}
+                           class="w-4 h-4 rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)] transition mr-2">
+                    <span class="text-sm">Show as featured product</span>
+                </label>
+            </div>
+        </div>
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+            <button type="submit" class="btn-primary w-full sm:w-auto justify-center">Save</button>
+            <a href="{{ url_for('admin_products') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-6 rounded-lg transition text-center w-full sm:w-auto">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

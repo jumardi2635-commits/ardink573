@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - {{ site_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A3A5F;
+        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0b1120 0%, #0d1a2b 100%); }
+        .glass-card {
+            background: rgba(15, 25, 40, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 1.5rem;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background-color: #0f2a44;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="glass-card p-8 w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center mb-6" style="color: var(--primary);">Admin Login</h1>
+        <form method="POST">
+            <div class="mb-4">
+                <label class="block mb-2 text-sm text-gray-300">Username</label>
+                <input type="text" name="username" required class="w-full p-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white">
+            </div>
+            <div class="mb-6">
+                <label class="block mb-2 text-sm text-gray-300">Password</label>
+                <input type="password" name="password" required class="w-full p-3 rounded-lg bg-white/5 border border-white/10 focus:border-blue-500 focus:outline-none text-white">
+            </div>
+            <button type="submit" class="btn-primary">Masuk</button>
+        </form>
+        <p class="mt-4 text-center text-gray-400 text-sm">Default: admin / admin123</p>
+    </div>
+</body>
+</html>

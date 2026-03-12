@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Tentang Kami - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 p-5">
+            <h1 class="display-4 fw-bold text-center mb-4" style="color: var(--primary);">Tentang Handphone Second</h1>
+            
+            <div class="text-center mb-5">
+                <img src="https://images.unsplash.com/photo-1580910051074-3eb694886505?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="About us" class="img-fluid rounded-4 shadow" style="max-height: 300px; object-fit: cover;">
+            </div>
+
+            <div class="fs-5 text-muted lh-lg">
+                <p class="mb-4">
+                    <strong class="fs-4" style="color: var(--primary);">PUSAT GADAI INDONESIA</strong> adalah platform terpercaya yang menyediakan ponsel berkualitas dengan harga terbaik. Kami menghadirkan ponsel-ponsel pilihan yang berasal dari <strong class="text-dark">lelang gadai jatuh tempo</strong> – unit yang tidak ditebus oleh pemiliknya setelah masa gadai berakhir, kemudian dilelang dan kami kurasi secara ketat.
+                </p>
+
+                <h3 class="fw-semibold mt-5 mb-3" style="color: var(--primary);">🔄 Asal-Usul Produk Kami</h3>
+                <p>
+                    Produk kami mayoritas berasal dari <strong>perusahaan gadai terkemuka</strong> yang bekerja sama dengan kami. Ketika seorang nasabah tidak dapat menebus barangnya dalam jangka waktu yang ditentukan, barang tersebut akan masuk ke dalam proses lelang terbuka. Kami kemudian memenangkan lelang dan melakukan <strong>inspeksi menyeluruh</strong> terhadap setiap unit sebelum kami jual kembali.
+                </p>
+
+                <h3 class="fw-semibold mt-5 mb-3" style="color: var(--primary);">🔍 Jaminan Kualitas</h3>
+                <p>
+                    Setiap ponsel yang kami tawarkan telah melalui <strong>pemeriksaan ketat oleh teknisi berpengalaman</strong>. Kami memeriksa kondisi fisik, fungsionalitas semua komponen (layar, baterai, kamera, sensor), serta keaslian nomor IMEI. Kami memastikan bahwa setiap unit yang sampai ke tangan Anda dalam kondisi siap pakai.
+                </p>
+
+                <h3 class="fw-semibold mt-5 mb-3" style="color: var(--primary);">💰 Harga Kompetitif</h3>
+                <p>
+                    Karena barang berasal dari lelang, kami bisa menawarkan harga yang jauh lebih murah dibandingkan harga pasaran, tanpa mengorbankan kualitas. Anda mendapatkan ponsel berkualitas dengan harga yang bersahabat.
+                </p>
+
+                <h3 class="fw-semibold mt-5 mb-3" style="color: var(--primary);">🎯 Komitmen Kami</h3>
+                <p>
+                    Kami berkomitmen untuk memberikan pengalaman berbelanja yang aman, transparan, dan menyenangkan. Dengan dukungan pelanggan yang responsif dan opsi pembayaran yang fleksibel, Handphone Second hadir untuk memenuhi kebutuhan ponsel Anda.
+                </p>
+
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('catalog') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3">Lihat Katalog</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

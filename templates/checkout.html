@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('checkout_title') }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1 class="display-4 fw-bold mb-5" style="color: var(--primary);">{{ _('checkout_title') }}</h1>
+
+<div class="row g-5">
+    <!-- Checkout Form -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-lg rounded-4 p-4">
+            <h4 class="fw-semibold mb-4" style="color: var(--primary);">{{ _('shipping_address') }}</h4>
+            <form method="POST" id="checkout-form">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">{{ _('full_name') }} *</label>
+                    <input type="text" name="name" required class="form-control form-control-lg rounded-pill" placeholder="Nama lengkap">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">{{ _('phone_number') }} *</label>
+                    <input type="text" name="telegram" required class="form-control form-control-lg rounded-pill" placeholder="@username atau nomor telepon">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Email ({{ _('optional') }})</label>
+                    <input type="email" name="email" class="form-control form-control-lg rounded-pill" placeholder="email@contoh.com">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-medium">{{ _('shipping_address') }} *</label>
+                    <textarea name="address" rows="4" required class="form-control rounded-4" placeholder="Alamat lengkap"></textarea>
+                </div>
+                <button type="submit" id="place-order-btn" class="btn btn-primary btn-lg rounded-pill w-100 py-3">{{ _('place_order') }}</button>
+                {% if telegram_group_link %}
+                <input type="hidden" id="telegram-group-link" value="{{ telegram_group_link }}">
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-lg rounded-4 p-4">
+            <h4 class="fw-semibold mb-4" style="color: var(--primary);">{{ _('order_summary') }}</h4>
+            <div class="mb-4">
+                {% for item in cart_items %}
+                <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                    <div>
+                        <p class="fw-semibold mb-1">{{ item.name }} <span class="text-muted">x{{ item.quantity }}</span></p>
+                        <small class="text-muted">{{ item.brand }} {{ item.model }}</small>
+                    </div>
+                    <span class="fw-bold" style="color: var(--primary);">{{ format_price(item.price * item.quantity) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center fs-4 fw-bold pt-3 border-top">
+                <span>{{ _('total') }}:</span>
+                <span style="color: var(--primary);">{{ format_price(total) }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('checkout-form').addEventListener('submit', function(e) {
+    var linkField = document.getElementById('telegram-group-link');
+    if (linkField) {
+        var telegramLink = linkField.value;
+        if (telegramLink) {
+            setTimeout(function() {
+                window.open(telegramLink, '_blank');
+            }, 500);
+        }
+    }
+});
+</script>
+{% endblock %}
